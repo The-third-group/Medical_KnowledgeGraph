@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+    <html lang="zh-hans">
+
+<head>
+    <meta charset="UTF-8">
+
+        <title>知识图谱 - OwnThink</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" href="/static/favicon.ico">
+
+        <link rel="stylesheet" href="/static/css/styles.css">
+
+    <link rel="stylesheet" href="/static/css/knowledge.css">
+    <script src="/static/js/echarts.js"></script>
+</head>
+<body>
+<header>
+    <div class="container">
+        <a href="/">
+            <div class="logo"></div>
+        </a>
+        <div class="menus">
+            <a  href="/">首页</a>
+
+            <a  class="active"  href="/knowledge.html">知识图谱</a>
+
+            <a  href="/rel.html">关系查询</a>
+        </div>
+        <div class="menus float-right">
+            <a href="/">实体查询</a>
+            <a href="/QA">医疗问答</a>
+        </div>
+    </div>
+</header>
+
+    <div class="main bg2">
+        <form action="/searchRelationForm" method="get" >
+            <div id='app'>
+                <div class="container">
+                    <!--<input class="input" name="name" placeholder="请输入关键字">-->
+                    <input type="text" id = "entity1_text" name = "entity1_text" class ="input" placeholder="实体１" >
+                    <input type="text" id = "entity2_text" name = "entity2_text" class ="input" placeholder="实体２" >
+                    <input type=submit class ="input">
+
+                </div>
+                <!--<div class="no-data" v-if="noData" id="no">啥也没有找到，换个词试试吧~</div>-->
+                <div id="graph" style="width: 90%;height: 800px;margin-left: auto;margin-right: auto"></div>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="footer">
+        <div class="container copyright">
+            <p class="txt">人工智能 1704A</p>
+            <p class="txt">
+                <a href="/" target="_blank">第三小组</a>
+            </p>
+        </div>
+    </div>
+
+
+<script type="text/javascript">
+	var searchResult = {{searchResult|safe}}
+	//用表格列出所有的关系
+    tableData = []
+    for (var i = 0 ; i < searchResult.length ; i++){
+        relationData = {} ;
+        relationData['entity1'] = searchResult[i]['n1']['name'];
+        relationData['relation'] = searchResult[i]['rel']['name'] ;
+        relationData['entity2'] = searchResult[i]['n2']['name'] ;
+        tableData.push(relationData) ;
+    }
+    <!--jQuery(function(){-->
+        <!--$('.table').footable({-->
+        <!--"columns": [{"name":"entity1",title:"Entity1"} ,-->
+                  <!--{"name":"relation",title:"Relation"},-->
+                  <!--{"name":"entity2",title:"Entity2"}],-->
+        <!--"rows": tableData-->
+        <!--});-->
+    <!--});-->
+
+    //echarts 数据
+    var data = [] ;
+    var links = [] ;
+
+    //构造展示的数据
+    var maxDisPlayNode = 15 ;
+    var id = 0 ;
+    for( var i = 0 ;id < maxDisPlayNode&& i<searchResult.length ; i++ ){
+        //获取node1
+        node1 = {} ;
+        node1['name'] = searchResult[i]['n1']['name'] ;
+        node1['draggable'] = true ;
+        if('url' in searchResult[i]['n1']){
+            node1['category'] = 1 ;
+        }
+        else{
+            node1['category'] = 2 ;
+        }
+        var flag = 1 ;
+
+        relationTarget = id.toString() ;
+        for(var j = 0 ; j<data.length ;j++){
+        	if(data[j]['name'] === node1['name']){
+        		flag = 0 ;
+        		relationTarget = data[j]['id'] ;
+        		break ;
+        	}
+        }
+
+        node1['id'] = relationTarget ;
+        if(flag === 1){
+        	id++ ;
+        	data.push(node1) ;
+        }
+
+        //获取node2
+        node2 = {} ;
+        node2['name'] = searchResult[i]['n2']['name'] ;
+        node2['draggable'] = true ;
+        if('url' in searchResult[i]['n2']){
+            node2['category'] = 1 ;
+        }
+        else{
+            node2['category'] = 2 ;
+        }
+        flag = 1 ;
+        relationTarget = id.toString() ;
+        for(var j = 0 ; j<data.length ;j++){
+        	if(data[j]['name'] === node2['name']){
+        		flag = 0 ;
+        		relationTarget = data[j]['id'] ;
+        		break ;
+        	}
+        }
+        node2['id'] = relationTarget ;
+        if(flag === 1){
+        	id++ ;
+        	data.push(node2) ;
+        }
+        //获取relation
+        relation = {}
+        relation['source'] = node1['id'];
+        relation['target'] = node2['id'] ;
+        relation['category'] = 0 ;
+        flag = 1;
+        for(var j = 0 ;j<links.length;j++){
+        	if(links[j]['source'] == relation['source'] && links[j]['target'] == relation['target']){
+        		links[j]['value'] = links[j]['value'] + searchResult[i]['rel']['type'] ;
+        		flag = 0 ;
+        		break ;
+        	}
+        }
+        if(flag === 1){
+        	relation['value'] = searchResult[i]['rel']['name'] ;
+        	relation['symbolSize'] = 10;
+        	links.push(relation) ;
+        }
+
+    }
+
+
+     // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('graph'));
+
+    option = {
+	    title: {
+	        text: ''
+	    },
+	    tooltip: {},
+	    animationDurationUpdate: 1500,
+	    animationEasingUpdate: 'quinticInOut',
+	    label: {
+	        normal: {
+	            show: true,
+	            textStyle: {
+	                fontSize: 12
+	            },
+	        }
+	    },
+	    legend: {
+	        x: "center",
+	        show: false
+	    },
+	    series: [
+
+	        {
+	            type: 'graph',
+	            layout: 'force',
+	            symbolSize: 45,
+	            focusNodeAdjacency: true,
+	            roam: true,
+	            edgeSymbol: ['none', 'arrow'],
+	            categories: [{
+	                name: '查询实体',
+	                itemStyle: {
+	                    normal: {
+	                        color: "#009800",
+	                    }
+	                }
+	            }, {
+	                name: 'HudongItem',
+	                itemStyle: {
+	                    normal: {
+	                        color: "#4592FF",
+	                    }
+	                }
+	            }, {
+	                name: 'NewNode',
+	                itemStyle: {
+	                    normal: {
+	                        color: "#C71585",
+	                    }
+	                }
+	            }],
+	            label: {
+	                normal: {
+	                    show: true,
+	                    textStyle: {
+	                        fontSize: 12,
+	                    },
+	                }
+	            },
+	            force: {
+	                repulsion: 1000
+	            },
+	            edgeSymbolSize: [4, 50],
+	            edgeLabel: {
+	                normal: {
+	                    show: true,
+	                    textStyle: {
+	                        fontSize: 10
+	                    },
+	                    formatter: "{c}"
+	                }
+	            },
+	            data: data,
+	            links: links,
+	            lineStyle: {
+	                normal: {
+	                    opacity: 0.9,
+	                    width: 1.3,
+	                    curveness: 0,
+	                    color:"white",
+	                }
+	            }
+	        }
+	    ]
+	};
+	// 使用刚指定的配置项和数据显示图表。
+	myChart.setOption(option);
+
+</script>
+
+</body>
+</html>

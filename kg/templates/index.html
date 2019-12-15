@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+    <html lang="zh-hans">
+
+<head>
+    <meta charset="UTF-8">
+
+        <title>医疗知识图谱</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" href="/static/favicon.ico">
+
+        <link rel="stylesheet" href="/static/css/styles.css">
+
+
+        <link rel="stylesheet" href="/static/css/index.css">
+
+</head>
+<body>
+<header>
+    <div class="container">
+        <a href="/">
+            <div class="logo"></div>
+        </a>
+        <div class="menus">
+            <a  class="active"  href="/">首页</a>
+
+            <a  href="/knowledge">知识图谱</a>
+
+            <a  href="/rel">关系查询</a>
+        </div>
+        <div class="menus float-right">
+            <a  href="/">实体查询</a>
+            <a  href="/QA">医疗问答</a>
+        </div>
+    </div>
+</header>
+
+    <div class="main bg1">
+
+            <div id='app'>
+                <div class="container">
+    <!--<input v-model="input" @keyup.enter="enter()" class="input" placeholder="请输入关键字">-->
+    <p v-model="input" @keyup.enter="enter()"><font color="white" size="15">医疗知识图谱</font></p>
+</div>
+                <svg :width='isMobile?"100%":width' :height='height' @mousemove='listener($event)'>
+                    <a :href="tag.href" v-for='tag in tags'>
+                        <text :fill="tag.color" :x='tag.x' :y='tag.y' :font-size='20 * (600/(600-tag.z))'
+                              :fill-opacity='((400+tag.z)/600)' v-text="tag.text"></text>
+                    </a>
+                </svg>
+            </div>
+    </div>
+
+    <div class="footer">
+        <div class="container copyright">
+            <p class="txt">人工智能 1704A</p>
+            <p class="txt">
+                <a href="/" target="_blank">第三组</a>
+            </p>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="/static/js/vue.js"></script>
+    <script type="text/javascript" src="/static/js/axios.min.js"></script>
+    <script type="text/javascript" src="/static/js/index.js"></script>
+
+    <!--<script type="text/javascript" src="https://robot.ownthink.com/bot/js/robot.js?appid=xiaosi"></script>-->
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?3f8937cc2edfb9843cc6e2ba660898b9";
+	  var s = document.getElementsByTagName("script")[0];
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+</body>
+</html>

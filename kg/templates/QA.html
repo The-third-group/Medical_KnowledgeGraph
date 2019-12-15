@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+    <html lang="zh-hans">
+
+<head>
+    <meta charset="UTF-8">
+    
+        <title>知识图谱 - OwnThink</title>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+        <link rel="icon" href="/static/favicon.ico">
+        
+        <link rel="stylesheet" href="/static/css/styles.css">
+    
+    
+    <link rel="stylesheet" href="/static/css/knowledge.css">
+    <script src="/static/js/echarts.js"></script>
+</head>
+<body>
+<header>
+    <div class="container">
+        <a href="/">
+            <div class="logo"></div>
+        </a>
+        <div class="menus">
+            <a  href="/">首页</a>
+            
+            <a  class="active"  href="/knowledge.html">知识图谱</a>
+            
+            <a  href="/rel">关系查询</a>
+        </div>
+        <div class="menus float-right">
+            <a  href="/">实体查询</a>
+            <a  href="/QA">医疗问答</a>
+        </div>
+    </div>
+</header>
+
+    <div class="main bg2">
+        <form action="/QA" method="get" >
+            <div id='app'>
+                <div class="container">
+                    <input class="input" name="question" placeholder="请输入疾病名称">
+                </div>
+                <!--<div class="no-data" v-if="noData" id="no">啥也没有找到，换个词试试吧~</div>-->
+                <div style="width: 90%;height: 800px;margin-left: auto;margin-right: auto">
+                    <font color="white">{{answer}}</font>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="footer">
+        <div class="container copyright">
+            <p class="txt">人工智能 1704A</p>
+            <p class="txt">
+                <a href="/" target="_blank">第三小组</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
